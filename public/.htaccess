@@ -1,0 +1,34 @@
+# Configurações de Segurança e Performance Anthurium
+<IfModule mod_headers.c>
+    # Camada 1: Cabeçalhos HTTP Rigorosos
+    Header set X-Frame-Options "DENY"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "origin-when-cross-origin"
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    # Camada 2: CSP (permitindo GSAP e APIs Google)
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'self'; connect-src 'self' https://script.google.com;"
+    
+    # Camada 5: Ocultação da stack
+    Header unset X-Powered-By
+</IfModule>
+
+# Proteção contra Hotlinking (Imagens e Vídeos)
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteCond %{HTTP_REFERER} !^$
+    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?anthuriumtech.com.br [NC]
+    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?anthurium-landingpage.vercel.app [NC]
+    # Permitir localhost para testes se necessário
+    # RewriteCond %{HTTP_REFERER} !^https?://localhost [NC]
+    RewriteRule \.(jpg|jpeg|png|gif|svg|webm|mp4)$ - [F,NC]
+</IfModule>
+
+# Configuração para Next.js Static Export
+# Garante que URLs sem .html funcionem
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ $1.html [L,QSA]
+</IfModule>

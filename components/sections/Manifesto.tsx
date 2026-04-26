@@ -77,7 +77,6 @@ export default function Manifesto() {
     rafId = requestAnimationFrame(tick)
 
     return () => {
-      observer.disconnect()
       cancelAnimationFrame(rafId)
     }
   }, [])
