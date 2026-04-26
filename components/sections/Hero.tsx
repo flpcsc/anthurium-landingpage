@@ -167,6 +167,7 @@ export default function Hero() {
 
         {/* Scroll indicator */}
         <div
+          className="hero__scroll"
           style={{
             position: 'absolute',
             bottom: '2.5rem',

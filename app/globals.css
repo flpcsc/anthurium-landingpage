@@ -403,4 +403,8 @@ html.lenis body {
   .h-scroll-card {
     width: 90vw;
   }
+
+  .hero__scroll {
+    display: none !important;
+  }
 }
