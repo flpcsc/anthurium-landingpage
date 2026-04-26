@@ -18,6 +18,7 @@ export default function Hero() {
   const canvasRef  = useRef<HTMLDivElement>(null)
   const line1Ref   = useRef<HTMLSpanElement>(null)
   const line2Ref   = useRef<HTMLSpanElement>(null)
+  const subRef     = useRef<HTMLParagraphElement>(null)
   const scrollLineRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -29,6 +30,11 @@ export default function Hero() {
         .fromTo([line1Ref.current, line2Ref.current],
           { opacity: 0, y: 60, skewY: 4 },
           { opacity: 1, y: 0, skewY: 0, duration: 1.1, ease: 'power4.out', stagger: 0.12 }
+        )
+        .fromTo(subRef.current,
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 1, ease: 'power3.out' },
+          '-=0.6'
         )
 
       /* ── Scroll indicator animation ────────────────────────────────── */
@@ -142,6 +148,18 @@ export default function Hero() {
               {HERO_COPY.headline[1]}
             </span>
           </h1>
+          <p 
+            ref={subRef}
+            className="body-lg" 
+            style={{ 
+              marginTop: '1.5rem', 
+              color: 'rgba(255,255,255,0.4)', 
+              maxWidth: '35ch',
+              opacity: 0,
+            }}
+          >
+            {HERO_COPY.sub}
+          </p>
         </div>
 
         {/* Scroll indicator */}
