@@ -52,11 +52,11 @@ const SERVICES = [
 
 export default function HorizontalServices() {
   const wrapperRef = useRef<HTMLDivElement>(null)
-  const trackRef   = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const track   = trackRef.current
+      const track = trackRef.current
       const wrapper = wrapperRef.current
       if (!track || !wrapper) return
 
@@ -88,13 +88,13 @@ export default function HorizontalServices() {
             const totalCards = cards.length
             cards.forEach((card, i) => {
               // Each card occupies 1/totalCards of the total progress
-              const cardStart    = i / totalCards
+              const cardStart = i / totalCards
               const cardProgress = Math.max(0, Math.min(1, (self.progress - cardStart) * totalCards))
 
               if (cardProgress > 0.05) {
                 const els = card.querySelectorAll('.card-number, .card-title, .card-desc, .card-tag')
                 const line = card.querySelector('.card-line')
-                gsap.to(els,  { opacity: 1, y: 0,       duration: 0.5, ease: 'power3.out', overwrite: 'auto' })
+                gsap.to(els, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', overwrite: 'auto' })
                 gsap.to(line, { scaleX: 1, duration: 0.6, ease: 'power3.out', overwrite: 'auto' })
               }
             })
@@ -112,7 +112,7 @@ export default function HorizontalServices() {
     <section
       ref={wrapperRef}
       id="services"
-      style={{ background: '#050A05' }}
+      style={{ background: '#050A05', overflow: 'hidden' }}
     >
       <div
         ref={trackRef}
@@ -145,7 +145,7 @@ export default function HorizontalServices() {
                 quality={80}
               />
             </div>
-            
+
             {/* Dark Overlay to ensure text readability */}
             <div
               style={{
@@ -197,10 +197,10 @@ export default function HorizontalServices() {
 
               <h2
                 className="card-title display-md"
-                style={{ 
-                  color: '#fff', 
+                style={{
+                  color: '#fff',
                   marginBottom: '1.5rem',
-                  fontSize: 'clamp(2rem, 6vw, 5rem)' 
+                  fontSize: 'clamp(2rem, 6vw, 5rem)'
                 }}
               >
                 {title}
@@ -208,8 +208,8 @@ export default function HorizontalServices() {
 
               <p
                 className="card-desc body-lg"
-                style={{ 
-                  color: 'rgba(240,255,244,0.45)', 
+                style={{
+                  color: 'rgba(240,255,244,0.45)',
                   marginBottom: '2.5rem',
                   fontSize: 'clamp(1.1rem, 2vw, 1.4rem)'
                 }}

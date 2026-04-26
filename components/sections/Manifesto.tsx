@@ -10,17 +10,17 @@ gsap.registerPlugin(ScrollTrigger)
 const FluidBackground = dynamic(() => import('@/components/canvas/FluidBackground'), { ssr: false })
 
 const LINES = [
-  { text: 'Trazemos a reinvenção.',      accent: false },
-  { text: 'Processos consomem tempo.',   accent: false },
-  { text: 'Otimizá-los é o nosso objetivo.', accent: true  },
+  { text: 'Trazemos a reinvenção.', accent: false },
+  { text: 'Processos consomem tempo.', accent: false },
+  { text: 'Otimizá-los é o nosso objetivo.', accent: true },
 ]
 
 export default function Manifesto() {
-  const wrapperRef    = useRef<HTMLDivElement>(null)
-  const linesRef      = useRef<(HTMLSpanElement | null)[]>([])
-  const scrollVelRef  = useRef(0)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const linesRef = useRef<(HTMLSpanElement | null)[]>([])
+  const scrollVelRef = useRef(0)
   const brightnessRef = useRef(0.5)
-  const lastScrollY   = useRef(0)
+  const lastScrollY = useRef(0)
 
   useEffect(() => {
     const lines = linesRef.current.filter(Boolean) as HTMLSpanElement[]
@@ -57,14 +57,14 @@ export default function Manifesto() {
     const tick = () => {
       const wrapper = wrapperRef.current
       if (wrapper) {
-        const rect     = wrapper.getBoundingClientRect()
-        const total    = wrapper.offsetHeight - window.innerHeight
+        const rect = wrapper.getBoundingClientRect()
+        const total = wrapper.offsetHeight - window.innerHeight
         const progress = Math.max(0, Math.min(1, -rect.top / total))
         brightnessRef.current = 0.65 + Math.sin(progress * Math.PI) * 0.55
 
         const vel = window.scrollY - lastScrollY.current
         scrollVelRef.current += (vel - scrollVelRef.current) * 0.1
-        lastScrollY.current   = window.scrollY
+        lastScrollY.current = window.scrollY
 
         // Kinetic Skew application
         const skew = Math.max(-20, Math.min(20, scrollVelRef.current * 0.8))
@@ -126,9 +126,12 @@ export default function Manifesto() {
               className="display-lg gpu"
               style={{
                 display: 'block',
-                fontSize: 'clamp(2rem, 5.6vw, 6.0rem)',
+                fontSize: 'clamp(1.8rem, 5.2vw, 6.0rem)',
                 color: accent ? '#2ECC71' : 'rgba(240,255,244,0.9)',
                 willChange: 'transform, opacity, clip-path',
+                overflowWrap: 'break-word',
+                lineHeight: 1.1,
+                maxWidth: '100%',
               }}
             >
               {text}

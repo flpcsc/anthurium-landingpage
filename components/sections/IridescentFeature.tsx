@@ -8,17 +8,17 @@ gsap.registerPlugin(ScrollTrigger)
 
 const STATS = [
   { value: '72%', label: 'Das empresas, vem integrando IA no dia a dia' },
-  { value: '35%',   label: 'Média de crescimento operacional com IA'   },
-  { value: '90%',  label: 'Dos gigantes de mercado investem em IA como diferêncial'        },
+  { value: '35%', label: 'Média de crescimento operacional com IA' },
+  { value: '90%', label: 'Dos gigantes de mercado investem em IA como diferêncial' },
 ]
 
 export default function IridescentFeature() {
-  const sectionRef  = useRef<HTMLDivElement>(null)
-  const bgRef       = useRef<HTMLDivElement>(null)
-  const maskRef     = useRef<HTMLDivElement>(null)
-  const headRef     = useRef<HTMLHeadingElement>(null)
-  const statsRef    = useRef<(HTMLDivElement | null)[]>([])
-  const warmRef     = useRef<HTMLDivElement>(null)
+  const sectionRef = useRef<HTMLDivElement>(null)
+  const bgRef = useRef<HTMLDivElement>(null)
+  const maskRef = useRef<HTMLDivElement>(null)
+  const headRef = useRef<HTMLHeadingElement>(null)
+  const statsRef = useRef<(HTMLDivElement | null)[]>([])
+  const warmRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -191,11 +191,11 @@ export default function IridescentFeature() {
           </h2>
         </div>
 
-        <div 
-          style={{ 
-            display: 'flex', 
-            flexDirection: 'column', 
-            gap: '3rem', 
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '3rem',
             paddingLeft: 'clamp(0rem, 5vw, 6rem)',
             transform: 'translateX(2vw)'
           }}
@@ -204,10 +204,10 @@ export default function IridescentFeature() {
             <div
               key={i}
               ref={(el) => { statsRef.current[i] = el }}
-              style={{ 
-                borderLeft: '1px solid rgba(46,204,113,0.3)', 
+              style={{
+                borderLeft: '1px solid rgba(46,204,113,0.3)',
                 paddingLeft: '2rem',
-                transform: `translateX(${i * 15}px)` 
+                transform: `translateX(${i * 15}px)`
               }}
             >
               <div

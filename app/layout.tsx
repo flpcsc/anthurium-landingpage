@@ -56,8 +56,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable}`} style={{ overflowX: 'hidden', width: '100%' }}>
+        <div style={{ overflowX: 'hidden', width: '100%', position: 'relative' }}>
+          {children}
+        </div>
         <ContactModal />
       </body>
     </html>
