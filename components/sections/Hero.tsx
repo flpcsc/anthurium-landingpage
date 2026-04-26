@@ -152,10 +152,12 @@ export default function Hero() {
             ref={subRef}
             className="body-lg" 
             style={{ 
-              marginTop: '1.5rem', 
-              color: 'rgba(255,255,255,0.4)', 
-              maxWidth: '35ch',
+              marginTop: '1rem', 
+              color: 'rgba(255,255,255,0.7)', 
+              maxWidth: '45ch',
               opacity: 0,
+              zIndex: 2,
+              position: 'relative'
             }}
           >
             {HERO_COPY.sub}
