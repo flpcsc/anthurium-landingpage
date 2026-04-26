@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm show *)",
+      "Bash(npm run *)",
+      "Bash(pkill -f \"next dev\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3004)",
+      "Bash(curl -s http://localhost:3004)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3005)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3006)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3007)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)"
+    ],
+    "additionalDirectories": [
+      "C:\\Anthurium_landing_3\\.next",
+      "c:\\Anthurium_landing_3\\public\\images"
+    ]
+  }
+}

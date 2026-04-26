@@ -1,0 +1,168 @@
+# Anthurium Landing — Histórico de Mudanças
+> Sessão: 2026-04-16 | Stack: Next.js 14, React 18, GSAP, Lenis, Three.js
+
+---
+
+## 1. Correções iniciais de setup
+
+### package.json
+- `@studio-freight/lenis` versão `^1.0.45` → `^1.0.42`
+  - Motivo: versão 1.0.45 não existia no registro npm
+
+### next.config.js
+- Removido `experimental: { optimizeCss: true }`
+  - Motivo: exige pacote `critters` que não estava instalado, causava erro 500
+
+### app/layout.tsx
+- Fontes `Geist` e `Geist_Mono` substituídas por `Inter` e `JetBrains_Mono`
+  - Motivo: `Geist` não existe no Next.js 14 via `next/font/google`
+
+---
+
+## 2. Remoção do cursor customizado
+
+### app/page.tsx
+- Removido import e uso do componente `<Cursor />`
+
+### app/globals.css
+- Removido `cursor: none` do `body`
+- Removidas classes `.cursor-dot` e `.cursor-ring` e seus estados hover
+- Removidas regras mobile referentes ao cursor (`.cursor-dot, .cursor-ring { display: none }`)
+- `.magnetic-btn`: `cursor: none` → `cursor: pointer`
+
+### hooks/useMagneticCursor.ts
+- Arquivo mantido (usado pelo botão de CTA), mas `trackGlobalCursor` não é mais chamado
+
+---
+
+## 3. Otimizações de performance
+
+### hooks/useMouseParallax.ts — REESCRITO
+- Removido RAF próprio (`requestAnimationFrame` loop independente)
+- Hook agora retorna apenas `targetRef` com posição raw do mouse
+- Lerp movido para dentro do `useFrame` do Three.js (único RAF)
+- Impacto: elimina 1–2 loops paralelos ao renderer
+
+### components/canvas/TorusKnot.tsx
+- `dpr`: `[1, 2]` → `[1, 1.5]` — reduz pixels em telas HiDPI (-44%)
+- `samples`: `12` → `6` — metade dos render passes do MeshTransmissionMaterial
+- `resolution`: `1024` → `512` — -75% memória FBO
+- Segmentos tubulares: `300` → `200` — -33% vértices
+- Mouse lerp movido para `useFrame` (usa novo hook API)
+
+### components/canvas/SilkWave.tsx
+- Subdivisões do plano: `180×180` → `100×100` — de 32.400 para 10.000 vértices (-69%)
+- `Environment preset="forest"` removido — shader customizado não usa HDRI
+- `antialias`: `true` → `false` — sem ganho visual em shader custom
+- Mouse lerp movido para `useFrame` (usa novo hook API)
+
+### components/canvas/FluidBackground.tsx
+- FBM octaves: `7` → `5` — reduz custo de fragmento GPU em ~28%
+
+### components/sections/CTALight.tsx
+- `s.dataset.cx / s.dataset.cy` substituídos por `cxRef` / `cyRef` (useRef)
+- Motivo: leitura de `dataset` a cada frame causava layout thrashing
+- Removido `cursor: none` do botão
+
+### components/sections/MarqueeStrip.tsx
+- `gsap.set(track, { x })` substituído por `track.style.transform = translateX(...)`
+- Impacto: remove overhead do GSAP no hot path do RAF
+
+### components/ui/ScrollProgress.tsx
+- `gsap.set(fill, { scaleX })` substituído por `fill.style.transform = scaleX(...)`
+
+### components/sections/Footer.tsx
+- Hover de links: `onMouseEnter/Leave` inline → classe CSS `.footer-link` com `:hover`
+- Removido `cursor: none` dos links e email
+
+### app/globals.css
+- Adicionada classe `.footer-link` com `color` e `transition` para hover
+- Removidas variáveis CSS não utilizadas (`--cursor-size`, `--cursor-size-hover`)
+- Regras mobile simplificadas (removidas referências a elementos de cursor inexistentes)
+
+---
+
+## 4. Remoção do canvas 3D da seção About
+
+### components/sections/AboutSilk.tsx
+- Removido import dinâmico do `SilkWave`
+- Removido `scrollProgRef` (referência de progresso para o shader)
+- Background substituído por `background: '#0A1A0F'` sólido
+- Mantidas todas as animações de painel (divider, label, heading, body)
+- Motivo: usuário solicitou remoção da sombra 3D interativa com cursor
+
+---
+
+## 5. Substituição do objeto 3D (Hero) por vídeo
+
+### components/sections/Hero.tsx — REESCRITO
+- Removido import do `TorusKnot` (Three.js canvas)
+- Removidos imports GSAP `scrollProgress` e `torusRef`
+- Adicionado elemento `<video>` com:
+  - `src="/Flow_202604162256.mp4"`
+  - `autoPlay loop muted playsInline`
+  - `objectFit: cover` (preenche viewport sem distorção)
+- Animações de scroll do texto removidas (eyebrow, lines, sub não saem mais ao scroll)
+- Mantida: animação de entrada (fade-in) e canvas fade/scale ao final do scroll
+- Arquivo de vídeo: `public/Flow_202604162256.mp4`
+
+---
+
+## 6. Correções de animações quebradas
+
+### app/page.tsx
+- `ScrollTrigger.refresh()` único (600ms) → 3 passes: 300ms, 1000ms, 2500ms
+- Motivo: imports dinâmicos com shaders/canvas demoram mais que 600ms para montar
+
+### components/sections/Manifesto.tsx — REESCRITO (animações)
+- Removido `scrub: 0.6` das revelações de texto
+- Substituído por `toggleActions: 'play none none none'` (dispara uma vez ao entrar)
+- Estado inicial definido via `gsap.set` explícito antes do contexto GSAP
+- Adicionado `zIndex: 1` no container de texto (garante posição acima do canvas shader)
+- Motivo: `scrub` combinado com timing de refresh causava texto preso em opacity:0
+
+### components/sections/HorizontalServices.tsx — REESCRITO (animações de card)
+- `x` target alterado para função `() => -(track.scrollWidth - window.innerWidth)`
+- Motivo: valor estático calculado no mount podia estar errado se DOM não estava pronto
+- Animações de card desvinculadas de `ScrollTrigger` independentes
+- Nova abordagem: `onUpdate` do scroll horizontal calcula `cardProgress` por card
+  - Cada card anima quando `progress > cardStart + threshold`
+  - Sincronizado exatamente com o scroll horizontal real
+- Removido `containerAnimation: gsap.getById('h-scroll-${i}')` que retornava `null`
+
+---
+
+## 7. Reversão pontual
+
+### components/sections/IridescentFeature.tsx
+- Animação de parallax do fundo revertida para `backgroundPosition`
+  - De: `transform: translate('5%', '-5%') → translate('-5%', '5%')`
+  - Para: `backgroundPosition: '60% 40%'` → `'40% 60%'` com `backgroundSize: '200% 200%'`
+- Motivo: usuário preferiu o comportamento visual original desta seção
+
+---
+
+## Referências de arquivos modificados
+
+| Arquivo | Tipo de mudança |
+|---|---|
+| `package.json` | Versão de dependência |
+| `next.config.js` | Remoção de feature experimental |
+| `app/layout.tsx` | Troca de fontes |
+| `app/page.tsx` | Remoção de cursor, refresh strategy |
+| `app/globals.css` | Cursor, hover CSS, limpeza |
+| `hooks/useMouseParallax.ts` | Reescrita — remoção de RAF |
+| `hooks/useMagneticCursor.ts` | Sem alteração (mantido) |
+| `components/canvas/TorusKnot.tsx` | Parâmetros de performance |
+| `components/canvas/SilkWave.tsx` | Parâmetros de performance |
+| `components/canvas/FluidBackground.tsx` | FBM octaves |
+| `components/sections/Hero.tsx` | Vídeo substituindo Three.js |
+| `components/sections/Manifesto.tsx` | Estratégia de animação |
+| `components/sections/HorizontalServices.tsx` | Animações de card |
+| `components/sections/IridescentFeature.tsx` | Reversão de parallax |
+| `components/sections/AboutSilk.tsx` | Remoção do SilkWave canvas |
+| `components/sections/CTALight.tsx` | Fix dataset thrashing, cursor |
+| `components/sections/MarqueeStrip.tsx` | style.transform direto |
+| `components/sections/Footer.tsx` | CSS hover, cursor |
+| `components/ui/ScrollProgress.tsx` | style.transform direto |
+| `components/ui/Cursor.tsx` | Não utilizado (componente existe mas não é importado) |
