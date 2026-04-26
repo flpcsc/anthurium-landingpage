@@ -153,6 +153,7 @@ export default function Hero() {
             className="body-lg" 
             style={{ 
               marginTop: '1rem', 
+              marginLeft: '0.2rem', // Ajuste para alinhar com o título
               color: 'rgba(255,255,255,0.7)', 
               maxWidth: '45ch',
               opacity: 0,
