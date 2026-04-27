@@ -16,10 +16,31 @@ export default function Hero() {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const stickyRef  = useRef<HTMLDivElement>(null)
   const canvasRef  = useRef<HTMLDivElement>(null)
+  const videoRef   = useRef<HTMLVideoElement>(null)
   const line1Ref   = useRef<HTMLSpanElement>(null)
   const line2Ref   = useRef<HTMLSpanElement>(null)
   const subRef     = useRef<HTMLParagraphElement>(null)
   const scrollLineRef = useRef<HTMLDivElement>(null)
+
+  // iOS Safari Low Power Mode workaround: play video on first user interaction
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const forcePlay = () => {
+      if (video.paused) {
+        video.play().catch(() => {})
+      }
+    }
+
+    document.addEventListener('touchstart', forcePlay, { once: true })
+    document.addEventListener('click', forcePlay, { once: true })
+
+    return () => {
+      document.removeEventListener('touchstart', forcePlay)
+      document.removeEventListener('click', forcePlay)
+    }
+  }, [])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -81,11 +102,7 @@ export default function Hero() {
           style={{ willChange: 'transform, opacity' }}
         >
           <video
-            onClick={(e) => {
-              if (e.currentTarget.paused) {
-                e.currentTarget.play().catch(() => {});
-              }
-            }}
+            ref={videoRef}
             autoPlay
             loop
             muted
