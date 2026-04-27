@@ -81,6 +81,11 @@ export default function Hero() {
           style={{ willChange: 'transform, opacity' }}
         >
           <video
+            onClick={(e) => {
+              if (e.currentTarget.paused) {
+                e.currentTarget.play().catch(() => {});
+              }
+            }}
             autoPlay
             loop
             muted
@@ -91,6 +96,7 @@ export default function Hero() {
               objectFit: 'cover',
             }}
           >
+            <source src="/0420.mp4" type="video/mp4" />
             <source src="/0420.webm" type="video/webm" />
           </video>
         </div>
